@@ -1,9 +1,9 @@
 @setlocal DisableDelayedExpansion
 @echo off
-set "scriptver=1.0.0-Mod"
+set "scriptver=1.1.0-Mod"
 
 :: ============================================================================
-:: OfflineInsiderEnroll-Mod v1.0.0 (Based on abbodi1406 v2.6.7-Fixed)
+:: OfflineInsiderEnroll-Mod v1.1.0 (Based on abbodi1406 v2.6.7-Fixed)
 :: Enhanced with Hardware Requirement Bypasses & Custom WU Fix
 :: ============================================================================
 
@@ -83,7 +83,7 @@ cls
 title OfflineInsiderEnroll v%scriptver%
 set "choice="
 echo.
-echo ---- Experience           ^| Channel ^| Target         ---
+echo ---- Experience        ^| Channel ^| Target        ---
 echo.
 echo. 1 - Experimental [Future] ^| Dev     ^| 29500+
 if %_srv% equ 0 (
@@ -92,7 +92,7 @@ echo. 3 - Beta                ^| Beta    ^| %_wis%
 )
 echo. 4 - Release Preview       ^| RP      ^| %_bld% / next RTM
 echo --------------------------------------------------------
-echo.
+echo. 5 - Apply Hardware Requirement Bypasses Only
 echo. 6 - Refresh Windows Update Scan Cache ^& Fix Errors
 echo. 7 - Reset Windows Insider Configuration
 echo. 8 - Unenroll ^& Stop receiving Insider builds
@@ -106,6 +106,7 @@ if /I "%choice%"=="2" goto :ENROLL_DEV
 if /I "%choice%"=="3" goto :ENROLL_BETA
 )
 if /I "%choice%"=="4" goto :ENROLL_RP
+if /I "%choice%"=="5" (call :APPLY_BYPASS&echo Done.&pause&goto :CHOICE_MENU)
 if /I "%choice%"=="6" goto :REFRESH_WU
 if /I "%choice%"=="7" goto :STOP_INSIDER
 if /I "%choice%"=="8" (set cleanup=1&goto :STOP_INSIDER)
@@ -264,13 +265,13 @@ echo.
 )>"%SystemRoot%\oic.reg"
 reg.exe import "%SystemRoot%\oic.reg"
 del /f /q "%SystemRoot%\oic.reg"
-if %build% LSS 21990 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsSelfHost\UI\Strings" /f /t REG_SZ /v StickyXaml /d "<StackPanel xmlns="^""http://schemas.microsoft.com/winfx/2006/xaml/presentation"^""><TextBlock Style="^""{StaticResource BodyTextBlockStyle }"^"">This device has been enrolled to the Windows Insider program using OfflineInsiderEnroll-Mod v%scriptver% (with Hardware Bypasses). If you want to change settings of the enrollment or stop receiving Windows Insider builds, please use the script. <Hyperlink NavigateUri="^""https://github.com/hoaiweb-design/offline-insider-fix"^"" TextDecorations="^""None"^"">GitHub Repo</Hyperlink></TextBlock><TextBlock Text="^""Applied configuration"^"" Margin="^""0,20,0,10"^"" Style="^""{StaticResource SubtitleTextBlockStyle}"^"" /><TextBlock Style="^""{StaticResource BodyTextBlockStyle }"^"" Margin="^""0,0,0,5"^""><Run FontFamily="^""Segoe MDL2 Assets"^"">&#xECA7;</Run> <Span FontWeight="^""SemiBold"^"">%Fancy%</Span></TextBlock><TextBlock Text="^""Channel: %uiChannel%"^"" Style="^""{StaticResource BodyTextBlockStyle }"^"" /><TextBlock Text="^""Content: %Content%"^"" Style="^""{StaticResource BodyTextBlockStyle }"^"" /><TextBlock Text="^""Telemetry settings notice"^"" Margin="^""0,20,0,10"^"" Style="^""{StaticResource SubtitleTextBlockStyle}"^"" /><TextBlock Style="^""{StaticResource BodyTextBlockStyle }"^"">Windows Insider Program requires your diagnostic data collection settings to be set to <Span FontWeight="^""SemiBold"^"">Full</Span>. You can verify or modify your current settings in <Span FontWeight="^""SemiBold"^"">Diagnostics &amp; feedback</Span>.</TextBlock><Button Command="^""{StaticResource ActivateUriCommand}"^"" CommandParameter="^""ms-settings:privacy-feedback"^"" Margin="^""0,10,0,0"^""><TextBlock Margin="^""5,0,5,0"^"">Open Diagnostics &amp; feedback</TextBlock></Button></StackPanel>"
+if %build% LSS 21990 reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsSelfHost\UI\Strings" /f /t REG_SZ /v StickyXaml /d "<StackPanel xmlns="^""http://schemas.microsoft.com/winfx/2006/xaml/presentation"^""><TextBlock Style="^""{StaticResource BodyTextBlockStyle }"^"">This device has been enrolled to the Windows Insider program using OfflineInsiderEnroll-Mod v%scriptver% (with Hardware Bypasses). If you want to change settings of the enrollment or stop receiving Windows Insider builds, please use the script. <Hyperlink NavigateUri="^""https://github.com/hoaiweb-design/offline-insider-enroll-mod"^"" TextDecorations="^""None"^"">GitHub Repo</Hyperlink></TextBlock><TextBlock Text="^""Applied configuration"^"" Margin="^""0,20,0,10"^"" Style="^""{StaticResource SubtitleTextBlockStyle}"^"" /><TextBlock Style="^""{StaticResource BodyTextBlockStyle }"^"" Margin="^""0,0,0,5"^""><Run FontFamily="^""Segoe MDL2 Assets"^"">&#xECA7;</Run> <Span FontWeight="^""SemiBold"^"">%Fancy%</Span></TextBlock><TextBlock Text="^""Channel: %uiChannel%"^"" Style="^""{StaticResource BodyTextBlockStyle }"^"" /><TextBlock Text="^""Content: %Content%"^"" Style="^""{StaticResource BodyTextBlockStyle }"^"" /><TextBlock Text="^""Telemetry settings notice"^"" Margin="^""0,20,0,10"^"" Style="^""{StaticResource SubtitleTextBlockStyle}"^"" /><TextBlock Style="^""{StaticResource BodyTextBlockStyle }"^"">Windows Insider Program requires your diagnostic data collection settings to be set to <Span FontWeight="^""SemiBold"^"">Full</Span>. You can verify or modify your current settings in <Span FontWeight="^""SemiBold"^"">Diagnostics &amp; feedback</Span>.</TextBlock><Button Command="^""{StaticResource ActivateUriCommand}"^"" CommandParameter="^""ms-settings:privacy-feedback"^"" Margin="^""0,10,0,0"^""><TextBlock Margin="^""5,0,5,0"^"">Open Diagnostics &amp; feedback</TextBlock></Button></StackPanel>"
 if %build% LSS 21990 goto :EOF
 (
 echo Windows Registry Editor Version 5.00
 echo.
 echo [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsSelfHost\UI\Strings]
-echo "StickyMessage"="{\"Message\":\"Device Enrolled Using OfflineInsiderEnroll-Mod\",\"LinkTitle\":\"\",\"LinkUrl\":\"\",\"DynamicXaml\":\"^<StackPanel xmlns=\\\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\\\"^>^<TextBlock Style=\\\"{StaticResource BodyTextBlockStyle }\\\"^>This device has been enrolled to the Windows Insider program using OfflineInsiderEnroll-Mod v%scriptver% (with Hardware Bypasses). If you want to change settings of the enrollment or stop receiving Windows Insider builds, please use the script. ^<Hyperlink NavigateUri=\\\"https://github.com/hoaiweb-design/offline-insider-fix\\\" TextDecorations=\\\"None\\\"^>GitHub Repo^</Hyperlink^>^</TextBlock^>^<TextBlock Text=\\\"Applied configuration\\\" Margin=\\\"0,20,0,10\\\" Style=\\\"{StaticResource SubtitleTextBlockStyle}\\\" /^>^<TextBlock Style=\\\"{StaticResource BodyTextBlockStyle }\\\" Margin=\\\"0,0,0,5\\\"^>^<Run FontFamily=\\\"Segoe MDL2 Assets\\\"^>^&#xECA7;^</Run^> ^<Span FontWeight=\\\"SemiBold\\\"^>%Fancy%^</Span^>^</TextBlock^>^<TextBlock Text=\\\"Channel: %uiChannel%\\\" Style=\\\"{StaticResource BodyTextBlockStyle }\\\" /^>^<TextBlock Text=\\\"Content: %Content%\\\" Style=\\\"{StaticResource BodyTextBlockStyle }\\\" /^>^<TextBlock Text=\\\"Telemetry settings notice\\\" Margin=\\\"0,20,0,10\\\" Style=\\\"{StaticResource SubtitleTextBlockStyle}\\\" /^>^<TextBlock Style=\\\"{StaticResource BodyTextBlockStyle }\\\"^>Windows Insider Program requires your diagnostic data collection settings to be set to ^<Span FontWeight=\\\"SemiBold\\\"^>Full^</Span^>. You can verify or modify your current settings in ^<Span FontWeight=\\\"SemiBold\\\"^>Diagnostics ^&amp; feedback^</Span^>.^</TextBlock^>^<Button Command=\\\"{StaticResource ActivateUriCommand}\\\" CommandParameter=\\\"ms-settings:privacy-feedback\\\" Margin=\\\"0,10,0,0\\\"^>^<TextBlock Margin=\\\"5,0,5,0\\\"^>Open Diagnostics ^&amp; feedback^</TextBlock^>^</Button^>^</StackPanel^>\",\"Severity\":0}"
+echo "StickyMessage"="{\"Message\":\"Device Enrolled Using OfflineInsiderEnroll-Mod\",\"LinkTitle\":\"\",\"LinkUrl\":\"\",\"DynamicXaml\":\"^<StackPanel xmlns=\\\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\\\"^>^<TextBlock Style=\\\"{StaticResource BodyTextBlockStyle }\\\"^>This device has been enrolled to the Windows Insider program using OfflineInsiderEnroll-Mod v%scriptver% (with Hardware Bypasses). If you want to change settings of the enrollment or stop receiving Windows Insider builds, please use the script. ^<Hyperlink NavigateUri=\\\"https://github.com/hoaiweb-design/offline-insider-enroll-mod\\\" TextDecorations=\\\"None\\\"^>GitHub Repo^</Hyperlink^>^</TextBlock^>^<TextBlock Text=\\\"Applied configuration\\\" Margin=\\\"0,20,0,10\\\" Style=\\\"{StaticResource SubtitleTextBlockStyle}\\\" /^>^<TextBlock Style=\\\"{StaticResource BodyTextBlockStyle }\\\" Margin=\\\"0,0,0,5\\\"^>^<Run FontFamily=\\\"Segoe MDL2 Assets\\\"^>^&#xECA7;^</Run^> ^<Span FontWeight=\\\"SemiBold\\\"^>%Fancy%^</Span^>^</TextBlock^>^<TextBlock Text=\\\"Channel: %uiChannel%\\\" Style=\\\"{StaticResource BodyTextBlockStyle }\\\" /^>^<TextBlock Text=\\\"Content: %Content%\\\" Style=\\\"{StaticResource BodyTextBlockStyle }\\\" /^>^<TextBlock Text=\\\"Telemetry settings notice\\\" Margin=\\\"0,20,0,10\\\" Style=\\\"{StaticResource SubtitleTextBlockStyle}\\\" /^>^<TextBlock Style=\\\"{StaticResource BodyTextBlockStyle }\\\"^>Windows Insider Program requires your diagnostic data collection settings to be set to ^<Span FontWeight=\\\"SemiBold\\\"^>Full^</Span^>. You can verify or modify your current settings in ^<Span FontWeight=\\\"SemiBold\\\"^>Diagnostics ^&amp; feedback^</Span^>.^</TextBlock^>^<Button Command=\\\"{StaticResource ActivateUriCommand}\\\" CommandParameter=\\\"ms-settings:privacy-feedback\\\" Margin=\\\"0,10,0,0\\\"^>^<TextBlock Margin=\\\"5,0,5,0\\\"^>Open Diagnostics ^&amp; feedback^</TextBlock^>^</Button^>^</StackPanel^>\",\"Severity\":0}"
 echo.
 )>"%SystemRoot%\oie.reg"
 reg.exe import "%SystemRoot%\oie.reg"
@@ -294,7 +295,8 @@ net.exe stop wuauserv /y
 net.exe stop cryptsvc /y
 cmd /c sc.exe stop usosvc
 cmd /c sc.exe stop wuauserv
-del /f /s /q "%SoftwareDistribution%\*"
+timeout /t 2 /nobreak >nul
+del /f /s /q "%SystemRoot%\SoftwareDistribution\*"
 del /f /q "%ProgramData%\USOPrivate\UpdateStore\*"
 del /s /f /q "%ProgramData%\USOShared\Logs\*"
 net.exe start cryptsvc /y
